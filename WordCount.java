@@ -145,8 +145,8 @@ public class WordCount {
 
     }
 
-    //METHOD WORDS_MAPPER r ok ok
-    //this method create key document-term and value 1 but we need to reduce,to mapping twn leksewn
+    //METHOD WORDS_MAPPER
+    //this method create key document-term and value 1 but we need to reduce,to mapping twn words
     public static final FlatMapFunction<Tuple2<String, String>, Tuple2<Tuple2<String, String>, Integer>> WORDS_MAPPER = new FlatMapFunction<Tuple2<String, String>, Tuple2<Tuple2<String, String>, Integer>>() {
 
         public Iterable<Tuple2<Tuple2<String, String>, Integer>> call(Tuple2<String, String> stringIntegerTuple2) throws Exception {
