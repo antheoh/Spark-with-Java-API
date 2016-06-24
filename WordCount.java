@@ -33,55 +33,13 @@ public class WordCount {
             System.exit(1);
         }
 
-        //SparkContext.wholeTextFiles lets you read a directory containing multiple small text files, and returns each of them as (filename, content) pairs
+        
         SparkConf sparkConf = new SparkConf().setAppName("WordCount");
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
 
-        //JavaRDD<String> lines = sc.textFile(args[0]);  //we create RDD our fist ds,elements are lines of input
-
-        JavaPairRDD<String, String> files = sc.wholeTextFiles(args[0]);  //this RDD contains filename,content as key,value
-
-        // Map each line to multiple words
         
-        /*JavaRDD<String> words = lines.flatMap( //passing each element of the source through a function flatMap
-                new FlatMapFunction<String, String>() {      //two args,first the type of the input,second the type of the result
-            public Iterable<String> call(String line) {    //iterable the type of the result,input 
-                return Arrays.asList(line.split(" "));
-            }
-        });   //dataset->now elements are words
 
-
-        JavaRDD<String> lineCounts = files.map(new Function<Tuple2<String, String>, String>() {  //Interface Function<T1,R>,pairnei san input to string(filename) string(content) kai kanei return string
-            @Override
-            public String call(Tuple2<String, String> fileNameContent) throws Exception {  //call(T1 v1) 
-                String content = fileNameContent._2();
-                int numLines = content.split("[\r\n]+").length;
-                return fileNameContent._1() + ":  " + numLines;
-            }
-        });   //dataset->filename:number_ofLines
-
-
-
-        JavaRDD<String> filename = files.map(new Function<Tuple2<String, String>, String>() {  //Interface Function<T1,R>,pairnei san input to string(filename) string(content) kai kanei return string
-            @Override
-            public String call(Tuple2<String, String> name_of_file) throws Exception {  //call(T1 v1) 
-                String onoma_arxeiou = name_of_file._1();
-
-                return onoma_arxeiou;
-            }
-        });   //dataset->onoma_arxeiou
-        
-        
-        JavaPairRDD<String, Integer> ones = words.mapToPair( //mapToPair(PairFunction<T,K2,V2> f)
-                new PairFunction<String, String, Integer>() //first arg type of input,key value next
-        {
-            public Tuple2<String, Integer> call(final String w) {                                    //call(T t)
-                return new Tuple2<String, Integer>(w.concat("_GetFileName"), 1);
-
-            }
-        });  //dataset ->now elements are key-values           
-        
-        */
+        JavaPairRDD<String, String> files = sc.wholeTextFiles(args[0]);  //this RDD contains filename,content as key,value    
         
         JavaPairRDD <String,String> word_with_file =files.flatMapToPair(new PairFlatMapFunction<Tuple2<String, String>, String, String>() {
             
@@ -98,23 +56,8 @@ public class WordCount {
                return mylist;
             }
             
-        });
-        
-        /*
-        JavaPairRDD<String,Integer> ones = word_with_file.mapToPair( 
-                new PairFunction<Tuple2<String,String>,String,Integer>()     //first 2 args type of input,key value next
-        {
-            
-            
-            public Tuple2<String,Integer> call(final String w,final String w2) {
-                                
-                return new Tuple2<String, Integer>(w.concat(w2), 1);
-            }          
-            
-            
-        });  //dataset ->now elements are key-values     
-        */
-        
+        });        
+               
         JavaPairRDD<String, Integer> ones = word_with_file.mapToPair( //mapToPair(PairFunction<T,K2,V2> f)
                 new PairFunction <Tuple2<String,String>,String,Integer>() //first arg type of input,key value next
         {
@@ -124,8 +67,7 @@ public class WordCount {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 return new Tuple2<String, Integer>(t._1().concat("_"+t._2()), 1);                
             }
-        });  //dataset ->now elements are key-values 
-        
+        });  //dataset ->now elements are key-values        
         
        
 
@@ -138,15 +80,13 @@ public class WordCount {
 
         }
         );
-
         counts.saveAsTextFile(args[1]);
-
         sc.stop();
 
     }
 
     //METHOD WORDS_MAPPER
-    //this method create key document-term and value 1 but we need to reduce,to mapping twn words
+    //this method create key document-term and value 1 but we need to reduce,to mapping words
     public static final FlatMapFunction<Tuple2<String, String>, Tuple2<Tuple2<String, String>, Integer>> WORDS_MAPPER = new FlatMapFunction<Tuple2<String, String>, Tuple2<Tuple2<String, String>, Integer>>() {
 
         public Iterable<Tuple2<Tuple2<String, String>, Integer>> call(Tuple2<String, String> stringIntegerTuple2) throws Exception {
