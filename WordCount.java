@@ -65,7 +65,7 @@ public class WordCount {
             @Override
             public Tuple2<String, Integer> call(Tuple2<String, String> t) throws Exception {
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                return new Tuple2<String, Integer>(t._1().concat("_"+t._2()), 1);                
+                return new Tuple2<String, Integer>("\n\nFileName:"+t._1()+"\tterm:"+t._2(), 1);                
             }
         });  //dataset ->now elements are key-values        
         
